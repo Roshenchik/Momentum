@@ -28,7 +28,7 @@ body {
   width: 100%;
   height: 30vh;
   min-height: 220px;  
-  padding: 20px;
+  padding: 90px 120px;
 }
 
 .player-controls {
@@ -124,7 +124,7 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   row-gap: 5px;
-  width: 180px;
+  width: 430px;
   min-height: 180px;  
   text-align: left;
 }
@@ -138,18 +138,26 @@ body {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  column-gap: 12px;
+  column-gap: 35px;
 }
 
 .weather-icon {
-  font-size: 44px;
+  font-size: 200px;
+}
+
+.temperature {
+  font-size: 50px;
+}
+
+.weather-description {
+  font-size: 50px;
 }
 
 .city {
-  width: 170px;
-  height: 34px;
+  width: 470px;
+  height: 70px;
   padding: 5px;
-  font-size: 20px;
+  font-size: 50px;
   line-height: 24px;
   color: #fff;  
   border: 0;
@@ -159,7 +167,7 @@ body {
 }
 
 .city::placeholder {  
-  font-size: 20px;
+  font-size: 50px;
   color: #fff;
   opacity: .6;
 }

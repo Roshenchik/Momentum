@@ -27,17 +27,22 @@ const greeting = document.querySelector('.greeting')
 
 const setOnLoad = () => {
 	nickname.placeholder = ' введите ваше имя'
+	cityInput.placeholder = 'Введите город'
 }
-
 window.addEventListener('load', setOnLoad)
 
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
+	localStorage.setItem('city', cityInput.value)
 }
 
 const getLocalStorage = () => {
 	if(localStorage.getItem('name')) {
 		nickname.value = localStorage.getItem('name')
+	}
+	if(localStorage.getItem('city')) {
+		cityInput.value = localStorage.getItem('city')
+		getWeather();
 	}
 }
 
@@ -105,7 +110,6 @@ const setBg = (number, dayTime) =>{
 	img.onload = () =>{
 		body.style.backgroundImage = `url("https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/${dayTime}/${number}.jpg")`
 	}
-	
 }
 
 setBg(randomNum, getDayOfTime())
@@ -139,7 +143,34 @@ slideNext.addEventListener('click', getSlideNext)
 slidePrev.addEventListener('click', getSlidePrev)
 
 
+/*                    UPLOAD WEATHER                   */
+const temperature = document.querySelector('.temperature')
+const weatherDiscription = document.querySelector('.weather-description')
+const weatherIcon = document.querySelector('.weather-icon')
+const cityInput = document.querySelector('.city')
 
 
+async function getWeather() {
+	const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityInput.value}&lang=ru&appid=78e887c84dc6b4b5403440f66203ca87&units=metric`
+	const res = await fetch(url);
+	const data = await res.json();
+	console.log(data.weather[0].id)
+
+	
+	temperature.textContent = `${Math.round(data.main.temp)} °C`;
+	weatherDiscription.textContent = data.weather[0].description;
+	weatherIcon.className = `weather-icon owf`;
+	weatherIcon.classList.add(`owf-${data.weather[0].id}`);
+}
+
+cityInput.addEventListener('change', getWeather);
 
 
+/*                    QUOTES                   */
+
+async function getQuote() {
+	fetch('https://dummyjson.com/quotes/random')
+	.then(res => res.json())
+	.then(data => console.log(data.quote, data.author));
+}
+getQuote();
