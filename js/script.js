@@ -1,3 +1,24 @@
+/*                    TRANSLATION                   */
+const greetingTranslation = {
+	ru: {morning: 'Доброе утро',
+				day: 'Добрый день',
+				evening: 'Добрый вечер',
+				night: 'Доброй ночи',
+				city: 'Минск',
+				placeholderNick: ' введите ваше имя',
+				placeholderCity: 'введите город',
+			},
+	en: {morning: 'Good morning',
+				day: 'Good afternoon',
+				evening: 'Good evening',
+				night: 'Good night',
+				city: 'Minsk',
+				placeholderNick: ' enter your name',
+				placeholderCity: 'enter your city',
+			}, 
+}
+
+
 /*                    TIME*                   */
 const time = document.querySelector('.time');
 const day = document.querySelector('.date');
@@ -21,15 +42,18 @@ showTime();
 
 
 /*                    GREETING                   */
-const nickname = document.querySelector('.name')
-const greeting = document.querySelector('.greeting')
+const nickname = document.querySelector('.name');
+const greeting = document.querySelector('.greeting');
+const cityInput = document.querySelector('.city');
 
 
-const setOnLoad = () => {
-	nickname.placeholder = ' введите ваше имя'
-	cityInput.placeholder = 'Введите город'
+const setOnLoad = (lang) => {
+	nickname.placeholder = ` ${lang.placeholderNick}`;
+	cityInput.placeholder = `${lang.placeholderCity}`;
+	cityInput.value = `${lang.city}`;
+	getWeather();
 }
-window.addEventListener('load', setOnLoad)
+window.addEventListener('load', setOnLoad(greetingTranslation.ru));
 
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
@@ -67,28 +91,28 @@ const getDayOfTime = () => {
 		return 'evening';
 	}
 }
-
-const showGreeting = () => {
+console.log(greetingTranslation.en.night)
+const showGreeting = (lang) => {
 	const dayTime = getDayOfTime()
 
 	switch (dayTime) {
 		case 'night':
-			greeting.textContent = `Доброй ночи,`
+			greeting.textContent = `${lang.night},`
 			break;
 		case 'morning':
-			greeting.textContent = `Доброе утро,`
+			greeting.textContent = `${lang.morning},`
 			break;
 		case 'afternoon':
-			greeting.textContent = `Добрый день,`
+			greeting.textContent = `${lang.day},`
 			break;
-		default: greeting.textContent = `Добрый вечер,`
+		default: greeting.textContent = `${lang.evening},`
 			break;
 	}
 
 	setTimeout(showGreeting, 1000)
 }
 
-showGreeting();
+showGreeting(greetingTranslation.ru);
 
 
 /*                    CHANGE BACKGROUND                   */
@@ -97,7 +121,7 @@ const slideNext = document.querySelector('.slide-next')
 const slidePrev = document.querySelector('.slide-prev')
 
 
-getRandomNumber = (min, max) =>{
+const getRandomNumber = (min, max) =>{
 	const random = Math.round(min + Math.random() * (max - min));
 	const randomWithZeros = String(random).padStart(2, '0');
 	return randomWithZeros;
@@ -147,7 +171,6 @@ slidePrev.addEventListener('click', getSlidePrev)
 const temperature = document.querySelector('.temperature')
 const weatherDiscription = document.querySelector('.weather-description')
 const weatherIcon = document.querySelector('.weather-icon')
-const cityInput = document.querySelector('.city')
 
 
 async function getWeather() {
@@ -167,10 +190,131 @@ cityInput.addEventListener('change', getWeather);
 
 
 /*                    QUOTES                   */
+const quote = document.querySelector('.quote');
+const author = document.querySelector('.author');
+const changeQuoteBtn = document.querySelector('.change-quote')
+
+
 
 async function getQuote() {
-	fetch('https://dummyjson.com/quotes/random')
-	.then(res => res.json())
-	.then(data => console.log(data.quote, data.author));
+	const url = `https://dummyjson.com/quotes/random`
+	const res = await fetch(url);
+	const data = await res.json();
+
+	quote.textContent = `“${data.quote}”`;
+	author.textContent = data.author;
 }
 getQuote();
+
+let deg = 180
+changeQuoteBtn.onclick = () => {
+	getQuote();
+	changeQuoteBtn.style.transform = `rotate(${deg}deg)`
+	deg += 180
+}
+
+import quotes from "./quotes.js";
+console.log(`length q ${quotes.length}`)
+/*                            Add JSON                           */
+
+
+/*                    MUSIC PLAYER                   */
+import playlist from './playlist.js';
+const play = document.querySelector('.play');
+const playNextBtn = document.querySelector('.play-next');
+const playPrevBtn = document.querySelector('.play-prev');
+const playListContainer = document.querySelector('.play-list');
+const audio = new Audio();
+
+let isPlay = false
+const playAudio = () =>{
+	audio.src = playlist[playNum].src;
+	audio.currentTime = pauseTime;
+	audio.play();
+	isPlay = true;
+}
+
+let pauseTime = 0;
+const pauseAudio = () =>{
+	audio.pause();
+	pauseTime = audio.currentTime;
+	isPlay = false;
+}
+
+play.addEventListener('click', () =>{
+	play.classList.toggle('pause');
+  (isPlay == false) ? playAudio() : pauseAudio();
+});
+
+let playNum = 0;
+const playNext = () =>{
+	if (playNum >= (playlist.length - 1)) {
+		playNum = 0;
+	}
+	else {
+		playNum++
+	}
+	playAudio();
+	play.classList.add('pause');
+	pauseTime = 0;
+}
+
+const playPrev = () =>{
+	if (playNum < 1) {
+		playNum = (playlist.length - 1);
+	}
+	else {
+		playNum--
+	}
+	playAudio();
+	play.classList.add('pause');
+	pauseTime = 0;
+}
+
+audio.addEventListener('ended', playNext);
+
+playNextBtn.addEventListener('click', playNext);
+playPrevBtn.addEventListener('click', playPrev);
+
+const addPlayItems = () => {
+	playlist.forEach((song, index) => {
+		const li = document.createElement('li');
+		li.classList.add(`play-item`);
+		li.classList.add(`item${index}`);
+		li.textContent = song.title;
+		playListContainer.append(li);
+	})
+}
+addPlayItems();
+
+const showAciveSongTitle = () =>{
+	const playItems = document.querySelectorAll('.play-item');
+	playItems.forEach((item) => item.classList.remove('active'))
+	playItems[playNum].classList.add('active');
+}
+
+audio.addEventListener('playing', showAciveSongTitle)
+
+
+/*                    SETTINGS                   */
+const settings = document.querySelector('.settings');
+const settingsBtn = document.querySelector('.setting-btn');
+const displayMode = document.querySelectorAll('input[name="displayMode"]');
+console.log(displayMode)
+
+const openSettings = () =>{
+	settings.classList.toggle('active');
+}
+settingsBtn.addEventListener('click', openSettings);
+
+displayMode.forEach(checkbox => {
+	checkbox.onclick = () =>{
+		if (!checkbox.checked) {
+			time.style.visibility = 'hidden';
+		}
+	}
+})
+
+
+
+
