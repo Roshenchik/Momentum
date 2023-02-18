@@ -1,32 +1,37 @@
 /*                    TRANSLATION                   */
-const greetingTranslation = {
+const languagePreset = {
 	ru: {morning: 'Доброе утро',
 				day: 'Добрый день',
 				evening: 'Добрый вечер',
 				night: 'Доброй ночи',
 				city: 'Минск',
+				date: 'ru-RU',
 				placeholderNick: ' введите ваше имя',
 				placeholderCity: 'введите город',
+				weather: 'ru'
 			},
 	en: {morning: 'Good morning',
 				day: 'Good afternoon',
 				evening: 'Good evening',
 				night: 'Good night',
 				city: 'Minsk',
+				date: 'en-EN',
 				placeholderNick: ' enter your name',
 				placeholderCity: 'enter your city',
+				weather: 'en'
 			}, 
 }
 
+let language = languagePreset.ru;
 
 /*                    TIME*                   */
 const time = document.querySelector('.time');
 const day = document.querySelector('.date');
 
-function showDate() {
+function showDate(lang) {
 	const date = new Date();
 	const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-	const currentDate = date.toLocaleDateString('ru-RU', options);
+	const currentDate = date.toLocaleDateString(lang.date, options);
 	day.textContent = currentDate;
 }
 
@@ -34,7 +39,7 @@ function showTime() {
 		const date = new Date();
 		const currentTime = date.toLocaleTimeString().slice(0,-3);
 		time.textContent = currentTime;
-		showDate();
+		showDate(language);
 		setTimeout(showTime, 1000);
 }
 
@@ -42,6 +47,7 @@ showTime();
 
 
 /*                    GREETING                   */
+const greetingContainer = document.querySelector('.greeting-container');
 const nickname = document.querySelector('.name');
 const greeting = document.querySelector('.greeting');
 const cityInput = document.querySelector('.city');
@@ -51,9 +57,9 @@ const setOnLoad = (lang) => {
 	nickname.placeholder = ` ${lang.placeholderNick}`;
 	cityInput.placeholder = `${lang.placeholderCity}`;
 	cityInput.value = `${lang.city}`;
-	getWeather();
+	getWeather(language);
 }
-window.addEventListener('load', setOnLoad(greetingTranslation.ru));
+window.addEventListener('load', setOnLoad(language));
 
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
@@ -66,7 +72,7 @@ const getLocalStorage = () => {
 	}
 	if(localStorage.getItem('city')) {
 		cityInput.value = localStorage.getItem('city')
-		getWeather();
+		getWeather(language);
 	}
 }
 
@@ -91,7 +97,7 @@ const getDayOfTime = () => {
 		return 'evening';
 	}
 }
-console.log(greetingTranslation.en.night)
+
 const showGreeting = (lang) => {
 	const dayTime = getDayOfTime()
 
@@ -112,7 +118,7 @@ const showGreeting = (lang) => {
 	setTimeout(showGreeting, 1000)
 }
 
-showGreeting(greetingTranslation.ru);
+showGreeting(language);
 
 
 /*                    CHANGE BACKGROUND                   */
@@ -168,13 +174,14 @@ slidePrev.addEventListener('click', getSlidePrev)
 
 
 /*                    UPLOAD WEATHER                   */
+const weather = document.querySelector('.weather')
 const temperature = document.querySelector('.temperature')
 const weatherDiscription = document.querySelector('.weather-description')
 const weatherIcon = document.querySelector('.weather-icon')
 
 
-async function getWeather() {
-	const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityInput.value}&lang=ru&appid=78e887c84dc6b4b5403440f66203ca87&units=metric`
+async function getWeather(lang) {
+	const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityInput.value}&lang=${lang.weather}&appid=78e887c84dc6b4b5403440f66203ca87&units=metric`
 	const res = await fetch(url);
 	const data = await res.json();
 	console.log(data.weather[0].id)
@@ -186,10 +193,11 @@ async function getWeather() {
 	weatherIcon.classList.add(`owf-${data.weather[0].id}`);
 }
 
-cityInput.addEventListener('change', getWeather);
+cityInput.addEventListener('change', getWeather(language));
 
 
 /*                    QUOTES                   */
+const quoteContainer = document.querySelector('.quote-container');
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
 const changeQuoteBtn = document.querySelector('.change-quote')
@@ -220,6 +228,7 @@ console.log(`length q ${quotes.length}`)
 
 /*                    MUSIC PLAYER                   */
 import playlist from './playlist.js';
+const player = document.querySelector('.player')
 const play = document.querySelector('.play');
 const playNextBtn = document.querySelector('.play-next');
 const playPrevBtn = document.querySelector('.play-prev');
@@ -300,7 +309,7 @@ audio.addEventListener('playing', showAciveSongTitle)
 const settings = document.querySelector('.settings');
 const settingsBtn = document.querySelector('.setting-btn');
 const displayMode = document.querySelectorAll('input[name="displayMode"]');
-console.log(displayMode)
+const languageBtn = document.querySelectorAll('input[name="language"]')
 
 const openSettings = () =>{
 	settings.classList.toggle('active');
@@ -308,12 +317,59 @@ const openSettings = () =>{
 settingsBtn.addEventListener('click', openSettings);
 
 displayMode.forEach(checkbox => {
-	checkbox.onclick = () =>{
-		if (!checkbox.checked) {
-			time.style.visibility = 'hidden';
+	checkbox.addEventListener('change', () =>{
+		const id = checkbox.id
+		console.log(id)
+		switch (id) {
+			case 'time':
+				time.classList.toggle('hidden')
+				break;
+			case 'date': 
+				day.classList.toggle('hidden')
+				break;
+			case 'greeting':
+				greetingContainer.classList.toggle('hidden')
+				break;
+			case 'quote':
+				quoteContainer.classList.toggle('hidden')
+				break;
+			case 'weather':
+				weather.classList.toggle('hidden')
+				break;
+			case 'player':
+				player.classList.toggle('hidden')
+				break;
 		}
-	}
+	})
 })
+
+languageBtn.forEach(lang => {
+	lang.addEventListener('change', () =>{
+		const id = lang.id;
+		console.log(id)
+		switch (id) {
+			case 'lang-ru':
+				language = languagePreset.ru
+				break;
+			case 'lang-en':
+				language = languagePreset.en
+				break;
+		}
+		getWeather(language);
+		showTime();
+
+	})
+})
+
+
+
+const state = {
+  language: 'en', 
+  photoSource: 'github',
+  blocks: ['time', 'date','greeting', 'quote', 'weather', 'audio']
+}
+
+
 
 
 

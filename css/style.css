@@ -31,6 +31,10 @@ body {
   padding: 90px 120px;
 }
 
+.player {
+  transition: opacity 0.5s ease;
+}
+
 .player-controls {
   display: flex;
   align-items: center;
@@ -134,6 +138,8 @@ body {
   width: 430px;
   min-height: 180px;  
   text-align: left;
+
+  transition: opacity 0.5s ease;
 }
 
 .weather-error {
@@ -149,6 +155,7 @@ body {
 }
 
 .weather-icon {
+  margin-top: 40px;
   font-size: 200px;
 }
 
@@ -214,12 +221,16 @@ body {
   font-family: 'Arial-MT';
   font-size: 350px;
   letter-spacing: -4px;  
+
+  transition: opacity 0.5s ease;
 }
 
 .date {
   min-height: 28px;
   font-size: 200px;
   margin-bottom: 20px;
+
+  transition: opacity 0.5s ease;
 }
 
 .greeting-container {
@@ -230,6 +241,8 @@ body {
   min-height: 48px;
   width: 100vw;
   font-size: 40px;
+
+  transition: opacity 0.5s ease;
 }
 
 .greeting {
@@ -298,23 +311,37 @@ body {
   height: 0;
 }
 .settings.active {
-  height: 1000px;
-  width: 800px;
+  height: 1330px;
+  width: 960px;
   opacity: 1;
   visibility: visible;
+  z-index: 9999;
+}
+
+.language-settings {
+  width: 100%;
+  display: flex;
+}
+
+.display-settings {
+  width: 100%;
+}
+
+.settings-title {
+  font-size: 50px;
 }
 
 .setting-pair {
-  padding-bottom: 11px;
-  cursor: pointer;
+  padding: 30px 0 30px 0;
   width: 100%;
   text-align: left;
   border-bottom: solid 0.1px rgba(255, 255, 255, 0.3);
 }
 
 .display-element {
-  margin-left: 40px;
+  padding: 20px 40px;
   font-size: 60px;
+  cursor: pointer;
 }
 
 input[type="checkbox"] {
@@ -322,8 +349,15 @@ input[type="checkbox"] {
   width: 50px;
   cursor: pointer;
 }
-input[type="checkbox"]:checked {
-  background-color: #fff;
+
+input[type="radio"] {
+  aspect-ratio: 1;
+  width: 50px;
+  cursor: pointer;
+}
+
+.quote-container {
+  transition: opacity 0.5s ease;
 }
 
 .change-quote {
@@ -369,4 +403,8 @@ input[type="checkbox"]:checked {
     font-size: 32px;
     padding: 5px;
   }
+}
+
+.hidden {
+  opacity: 0;
 }

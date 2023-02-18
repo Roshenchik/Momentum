@@ -55,36 +55,54 @@
 
     <button class="setting-btn"></button>
     <div class="settings">
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="time" checked>
-        <label class="display-element" for="time">Time</label>
+
+      <p class="settings-title language-setting-title">Выберите язык</p>
+      <div class="language-settings">
+        <div class="setting-pair">
+          <input type="radio" name="language" id="lang-ru" checked>
+          <label class="display-element" for="lang-ru">RU</label>
+        </div>
+        <div class="setting-pair">
+          <input type="radio" name="language" id="lang-en" checked>
+          <label class="display-element" for="lang-en">EN</label>
+        </div>
       </div>
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="date" checked>
-        <label class="display-element" for="date">Date</label>
-      </div>
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="greeting" checked>
-        <label class="display-element" for="greeting">Greeting</label>
-      </div>
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="quote" checked>
-        <label class="display-element" for="quote">Quote</label>
-      </div>
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="weather" checked>
-        <label class="display-element" for="weather">Weather</label>
-      </div>
-      <div class="setting-pair">
-        <input type="checkbox" name="displayMode" id="player" Mode>
-        <label class="display-element" for="weather">Player</label>
-      </div>
+
+      <p class="settings-title display-setting-title">Отображение</p>
+      <div class="display-settings">
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="time" checked>
+          <label class="display-element" for="time">Time</label>
+        </div>
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="date" checked>
+          <label class="display-element" for="date">Date</label>
+        </div>
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="greeting" checked>
+          <label class="display-element" for="greeting">Greeting</label>
+        </div>
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="quote" checked>
+          <label class="display-element" for="quote">Quote</label>
+        </div>
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="weather" checked>
+          <label class="display-element" for="weather">Weather</label>
+        </div>
+        <div class="setting-pair">
+          <input type="checkbox" name="displayMode" id="player" checked>
+          <label class="display-element" for="player">Audioplayer</label>
+        </div>
+      </div>  
     </div>
 
-    <button class="change-quote"></button>
-    <div>
-      <div class="quote"></div>
-      <div class="author"></div>
+    <div class="quote-container">
+      <button class="change-quote"></button>
+      <div>
+        <div class="quote"></div>
+        <div class="author"></div>
+      </div>  
     </div>
 
   </footer>
