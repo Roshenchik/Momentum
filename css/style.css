@@ -27,8 +27,7 @@ body {
   align-items: flex-start;
   width: 100%;
   height: 30vh;
-  min-height: 220px;  
-  padding: 90px 120px;
+  padding: 30px 30px;
 }
 
 .player {
@@ -39,20 +38,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 450px;
-  margin-bottom: 28px;
+  width: 120px;
+  margin-bottom: 15px;
 }
 
 .play-list {
+  font-size: 15px;
   text-align: left;
 }
 
 .play-item {
   position: relative;
-  padding: 5px;
-  padding-left: 60px;
+  padding: 4px;
+  padding-left: 18px;
   list-style: none;
-  font-size: 60px;
+  letter-spacing: -0.03em;
   opacity: .6;
   cursor: pointer;
   transition: .3s;
@@ -81,9 +81,9 @@ body {
 .slider-icon,
 .change-quote,
 .setting-btn {
-  width: 100px;
-  height: 100px;
-  background-size: 100px 100px;
+  width: 25px;
+  height: 25px;
+  background-size: 25px 25px;
   background-position: center center;
   background-repeat: no-repeat;
   background-color: transparent;
@@ -111,9 +111,9 @@ body {
 }
 
 .play {
-  width: 100px;
-  height: 100px;
-  background-size: 100px 100px;
+  width: 25px;
+  height: 25px;
+  background-size: 25px 25px;
   background-image: url("../assets/svg/play.svg");
 }
 
@@ -133,10 +133,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   row-gap: 5px;
-  width: 430px;
-  min-height: 180px;  
+  min-height: 70px;  
   text-align: left;
 
   transition: opacity 0.5s ease;
@@ -151,28 +150,28 @@ body {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  column-gap: 35px;
+  column-gap: 10px;
 }
 
 .weather-icon {
-  margin-top: 40px;
-  font-size: 200px;
+  margin-top: 10px;
+  font-size: 40px;
 }
 
 .temperature {
-  font-size: 50px;
+
 }
 
 .weather-description {
-  font-size: 50px;
+
 }
 
 .city {
-  width: 470px;
-  height: 70px;
-  padding: 5px;
-  font-size: 50px;
+  width: 120px;
+  height: 24px;
+  font-size: 16px;
   line-height: 24px;
+  text-align: center;
   color: #fff;  
   border: 0;
   outline: 0;
@@ -181,7 +180,7 @@ body {
 }
 
 .city::placeholder {  
-  font-size: 50px;
+
   color: #fff;
   opacity: .6;
 }
@@ -194,8 +193,8 @@ body {
   align-items: center;
   width: 100%;
   height: 40vh;
-  min-height: 260px;  
-  padding: 20px;
+  min-height: 65px;  
+  padding: 5px;
 }
 
 .slider-icon {
@@ -206,31 +205,39 @@ body {
 }
 
 .slide-prev {
-  left: 20px;
+  left: 5px;
   background-image: url("../assets/svg/slider-prev.svg");
 }
 
 .slide-next {
-  right: 20px;
+  right: 5px;
   background-image: url("../assets/svg/slider-next.svg");
 }
 
 .time {
-  min-height: 124px;
+  height: 100px;
   margin-bottom: 10px;
   font-family: 'Arial-MT';
-  font-size: 350px;
+  font-size: 90px;
   letter-spacing: -4px;  
 
-  transition: opacity 0.5s ease;
+  transition: opacity 1s 0.4s, height 1s;
+}
+.time.hidden {
+  height: 0;
+  transition: opacity 1s, height 1s 0.4s;
 }
 
 .date {
-  min-height: 28px;
-  font-size: 200px;
-  margin-bottom: 20px;
+  height: 60px;
+  font-size: 50px;
+  margin-bottom: 5px;
+  transition: opacity 1s 0.4s, height 1s;
 
-  transition: opacity 0.5s ease;
+}
+.date.hidden {
+  height: 0;
+  transition: opacity 1s, height 1s 0.4s;
 }
 
 .greeting-container {
@@ -238,9 +245,9 @@ body {
   flex-wrap: wrap;
   justify-content: stretch;
   align-items: center;
-  min-height: 48px;
+  min-height: 12px;
   width: 100vw;
-  font-size: 40px;
+  font-size: 10px;
 
   transition: opacity 0.5s ease;
 }
@@ -249,14 +256,14 @@ body {
   flex: 1;  
   padding: 10px;
   text-align: right;
-  font-size: 100px;
+  font-size: 25px;
 }
 
 .name {
   flex: 1;
   max-width: 50%;
   padding: 10px;
-  font-size: 100px;
+  font-size: 25px;
   text-align: left;
   color: #fff;
   background-color: transparent;
@@ -282,7 +289,7 @@ body {
 }
 
 .setting-btn {
-  margin: 140px 140px;
+  margin: 30px;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -290,13 +297,13 @@ body {
 }
 
 .settings {
-  margin: 0 0 290px 250px;
-  padding: 30px 80px;
+  margin: 0 0 70px 60px;
+  padding: 10px 20px;
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 1000px;
-  width: 800px;
+  height: 250px;
+  width: 200px;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -311,8 +318,8 @@ body {
   height: 0;
 }
 .settings.active {
-  height: 1330px;
-  width: 960px;
+  height: 400px;
+  width: 24px;
   opacity: 1;
   visibility: visible;
   z-index: 9999;
@@ -328,31 +335,31 @@ body {
 }
 
 .settings-title {
-  font-size: 50px;
+  font-size: 15px;
 }
 
 .setting-pair {
-  padding: 30px 0 30px 0;
+  padding: 8px 0 8px 0;
   width: 100%;
   text-align: left;
   border-bottom: solid 0.1px rgba(255, 255, 255, 0.3);
 }
 
 .display-element {
-  padding: 20px 40px;
+  padding: 5px 10px;
   font-size: 60px;
   cursor: pointer;
 }
 
 input[type="checkbox"] {
   aspect-ratio: 1;
-  width: 50px;
+  width: 15px;
   cursor: pointer;
 }
 
 input[type="radio"] {
   aspect-ratio: 1;
-  width: 50px;
+  width: 15px;
   cursor: pointer;
 }
 
@@ -361,9 +368,9 @@ input[type="radio"] {
 }
 
 .change-quote {
-  margin-bottom: 30px;
+  margin-bottom: 8px;
   background-image: url("../assets/svg/reload.svg");
-  transition: transform 1s ease;
+  transition: transform 0.45s ease;
 }
 .change-quote.click{
   transform: rotate(360deg);
@@ -372,15 +379,15 @@ input[type="radio"] {
 .quote {
   margin: 0 auto;
   max-width: 70%;
-  min-height: 135px;
-  font-size: 100px;
+  min-height: 40px;
+  font-size: 25px;
   font-style: italic;
   transition: 0.5s;
 }
 
 .author {
-  min-height: 90px;
-  font-size: 50px;
+  min-height: 25px;
+  font-size: 15px;
   transition: 0.5s;
 }
 

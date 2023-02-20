@@ -8,7 +8,8 @@ const languagePreset = {
 				date: 'ru-RU',
 				placeholderNick: ' введите ваше имя',
 				placeholderCity: 'введите город',
-				weather: 'ru'
+				weather: 'ru',
+				quote: 'ru',
 			},
 	en: {morning: 'Good morning',
 				day: 'Good afternoon',
@@ -18,7 +19,8 @@ const languagePreset = {
 				date: 'en-EN',
 				placeholderNick: ' enter your name',
 				placeholderCity: 'enter your city',
-				weather: 'en'
+				weather: 'en',
+				quote: 'en',
 			}, 
 }
 
@@ -201,28 +203,35 @@ const quoteContainer = document.querySelector('.quote-container');
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
 const changeQuoteBtn = document.querySelector('.change-quote')
+import quotes from './quotes.js';
+import quotesRu from './quotes-ru.js';
 
 
 
-async function getQuote() {
-	const url = `https://dummyjson.com/quotes/random`
-	const res = await fetch(url);
-	const data = await res.json();
-
-	quote.textContent = `“${data.quote}”`;
-	author.textContent = data.author;
+async function getQuote(lang) {
+	let randomQuote = getRandomNumber(0, quotesRu.length);
+	switch (lang.quote) {
+		case 'en':
+			quote.textContent = `“${quotes[randomQuote].text}”`;
+			author.textContent = quotes[randomQuote].author;
+			break;
+		case 'ru':
+			quote.textContent = `“${quotesRu[randomQuote].text}”`;
+			author.textContent = quotesRu[randomQuote].author;
+			break;
+	}
 }
-getQuote();
+getQuote(language);
 
 let deg = 180
 changeQuoteBtn.onclick = () => {
-	getQuote();
+	getQuote(language);
 	changeQuoteBtn.style.transform = `rotate(${deg}deg)`
 	deg += 180
 }
 
-import quotes from "./quotes.js";
-console.log(`length q ${quotes.length}`)
+
+
 /*                            Add JSON                           */
 
 
@@ -355,7 +364,9 @@ languageBtn.forEach(lang => {
 				language = languagePreset.en
 				break;
 		}
+		showGreeting(language);
 		getWeather(language);
+		getQuote(language);
 		showTime();
 
 	})
