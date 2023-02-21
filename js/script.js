@@ -63,23 +63,7 @@ const setOnLoad = (lang) => {
 }
 window.addEventListener('load', setOnLoad(language));
 
-const setLocalStorage = () => {
-	localStorage.setItem('name', nickname.value)
-	localStorage.setItem('city', cityInput.value)
-}
 
-const getLocalStorage = () => {
-	if(localStorage.getItem('name')) {
-		nickname.value = localStorage.getItem('name')
-	}
-	if(localStorage.getItem('city')) {
-		cityInput.value = localStorage.getItem('city')
-		getWeather(language);
-	}
-}
-
-window.addEventListener('beforeunload', setLocalStorage)
-window.addEventListener('load', getLocalStorage)
 
 
 const getDayOfTime = () => {
@@ -195,7 +179,9 @@ async function getWeather(lang) {
 	weatherIcon.classList.add(`owf-${data.weather[0].id}`);
 }
 
-cityInput.addEventListener('change', getWeather(language));
+cityInput.addEventListener('change', () =>{
+	getWeather(language)
+});
 
 
 /*                    QUOTES                   */
@@ -208,7 +194,7 @@ import quotesRu from './quotes-ru.js';
 
 
 
-async function getQuote(lang) {
+function getQuote(lang) {
 	let randomQuote = getRandomNumber(0, quotesRu.length);
 	switch (lang.quote) {
 		case 'en':
@@ -325,32 +311,33 @@ const openSettings = () =>{
 }
 settingsBtn.addEventListener('click', openSettings);
 
-displayMode.forEach(checkbox => {
-	checkbox.addEventListener('change', () =>{
-		const id = checkbox.id
-		console.log(id)
-		switch (id) {
-			case 'time':
-				time.classList.toggle('hidden')
-				break;
-			case 'date': 
-				day.classList.toggle('hidden')
-				break;
-			case 'greeting':
-				greetingContainer.classList.toggle('hidden')
-				break;
-			case 'quote':
-				quoteContainer.classList.toggle('hidden')
-				break;
-			case 'weather':
-				weather.classList.toggle('hidden')
-				break;
-			case 'player':
-				player.classList.toggle('hidden')
-				break;
-		}
+const hideEl = () => {displayMode.forEach(checkbox => {
+		checkbox.addEventListener('change', () => {
+			const id = checkbox.id
+			switch (id) {
+				case 'time':
+					!checkbox.checked ? time.classList.add('hidden') : time.classList.remove('hidden');
+					break;
+				case 'date': 
+					!checkbox.checked ? day.classList.add('hidden') : day.classList.remove('hidden');
+					break;
+				case 'greeting':
+					!checkbox.checked ? greetingContainer.classList.add('hidden') : greetingContainer.classList.remove('hidden');
+					break;
+				case 'quote':
+					!checkbox.checked ? quoteContainer.classList.add('hidden') : quoteContainer.classList.remove('hidden');
+					break;
+				case 'weather':
+					!checkbox.checked ? weather.classList.add('hidden') : weather.classList.remove('hidden');
+					break;
+				case 'player':
+					!checkbox.checked ? player.classList.add('hidden') : player.classList.remove('hidden');
+					break;
+			}
+		})
 	})
-})
+}
+hideEl()
 
 languageBtn.forEach(lang => {
 	lang.addEventListener('change', () =>{
@@ -372,13 +359,66 @@ languageBtn.forEach(lang => {
 	})
 })
 
-
-
-const state = {
-  language: 'en', 
-  photoSource: 'github',
-  blocks: ['time', 'date','greeting', 'quote', 'weather', 'audio']
+const setLocalStorage = () => {
+	localStorage.setItem('name', nickname.value)
+	localStorage.setItem('city', cityInput.value)
+	displayMode.forEach (checkbox => {
+		let isChecked = checkbox.checked;
+		localStorage.setItem(checkbox.id, isChecked);
+	})
+	languageBtn.forEach (radio => {
+		let isTurned = radio.checked;
+		localStorage.setItem(radio.id, isTurned);
+	})
 }
+window.addEventListener('beforeunload', setLocalStorage)
+
+const getLocalStorage = () => {
+	if(localStorage.getItem('name')) {
+		nickname.value = localStorage.getItem('name')
+	}
+	if(localStorage.getItem('city')) {
+		cityInput.value = localStorage.getItem('city')
+	}
+	displayMode.forEach (checkbox => {
+		let isChecked = localStorage.getItem(checkbox.id);
+		checkbox.checked = (isChecked === 'true');
+
+		const id = checkbox.id
+		switch (id) {
+			case 'time':
+				!checkbox.checked ? time.classList.add('hidden') : time.classList.remove('hidden');
+				break;
+			case 'date': 
+				!checkbox.checked ? day.classList.add('hidden') : day.classList.remove('hidden');
+				break;
+			case 'greeting':
+				!checkbox.checked ? greetingContainer.classList.add('hidden') : greetingContainer.classList.remove('hidden');
+				break;
+			case 'quote':
+				!checkbox.checked ? quoteContainer.classList.add('hidden') : quoteContainer.classList.remove('hidden');
+				break;
+			case 'weather':
+				!checkbox.checked ? weather.classList.add('hidden') : weather.classList.remove('hidden');
+				break;
+			case 'player':
+				!checkbox.checked ? player.classList.add('hidden') : player.classList.remove('hidden');
+				break;
+		}
+	})
+	
+	getWeather(language);
+}
+window.addEventListener('load', getLocalStorage)
+
+
+
+
+// const state = {
+//   language: 'en', 
+//   photoSource: 'github',
+//   blocks: ['time', 'date','greeting', 'quote', 'weather', 'audio']
+// }
 
 
 
