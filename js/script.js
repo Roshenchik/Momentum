@@ -10,6 +10,11 @@ const languagePreset = {
 				placeholderCity: 'введите город',
 				weather: 'ru',
 				quote: 'ru',
+				settings: {
+					languageTitle: 'Язык',
+					displayTitle: 'Отображение',
+					displayElements: ['Время', 'Дата', 'Приветствие', 'Цитата', 'Погода', 'Аудиоплеер',]
+				},
 			},
 	en: {morning: 'Good morning',
 				day: 'Good afternoon',
@@ -21,6 +26,11 @@ const languagePreset = {
 				placeholderCity: 'enter your city',
 				weather: 'en',
 				quote: 'en',
+				settings: {
+					languageTitle: 'Language',
+					displayTitle: 'Display',
+					displayElements: ['Time', 'Date', 'Greeting', 'Quote', 'Weather', 'Audioplayer',],
+				},
 			}, 
 }
 
@@ -193,17 +203,19 @@ import quotes from './quotes.js';
 import quotesRu from './quotes-ru.js';
 
 
-
 function getQuote(lang) {
-	let randomQuote = getRandomNumber(0, quotesRu.length);
+	const randomQuote = getRandomNumber(0, quotes.length-1);
+	const randomQuoteRu = getRandomNumber(0, quotesRu.length-1);
 	switch (lang.quote) {
 		case 'en':
+			console.log(quotes[randomQuote])
 			quote.textContent = `“${quotes[randomQuote].text}”`;
 			author.textContent = quotes[randomQuote].author;
 			break;
 		case 'ru':
-			quote.textContent = `“${quotesRu[randomQuote].text}”`;
-			author.textContent = quotesRu[randomQuote].author;
+			console.log(quotes[randomQuote])
+			quote.textContent = `“${quotesRu[randomQuoteRu].text}”`;
+			author.textContent = quotesRu[randomQuoteRu].author;
 			break;
 	}
 }
@@ -304,60 +316,87 @@ audio.addEventListener('playing', showAciveSongTitle)
 const settings = document.querySelector('.settings');
 const settingsBtn = document.querySelector('.setting-btn');
 const displayMode = document.querySelectorAll('input[name="displayMode"]');
-const languageBtn = document.querySelectorAll('input[name="language"]')
+const displaySettings = document.querySelector('.display-settings');
+const displayElement = displaySettings.querySelectorAll('.display-element');
+const languageBtn = document.querySelectorAll('input[name="language"]');
+const languageSettingTitle = document.querySelector('.language-setting-title');
+const displaySettingTitle = document.querySelector('.display-setting-title');
+
+const changeSettingsLang = (lang) => {
+	languageSettingTitle.textContent = lang.settings.languageTitle;
+	displaySettingTitle.textContent = lang.settings.displayTitle;
+	displayElement.forEach((name, index) =>{
+		name.textContent = lang.settings.displayElements[index];
+	})
+}
+changeSettingsLang(language);
 
 const openSettings = () =>{
 	settings.classList.toggle('active');
 }
 settingsBtn.addEventListener('click', openSettings);
 
-const hideEl = () => {displayMode.forEach(checkbox => {
+const examCheckboxes = checkbox => {
+	const id = checkbox.id
+	switch (id) {
+		case 'time':
+			!checkbox.checked ? time.classList.add('hidden') : time.classList.remove('hidden');
+			break;
+		case 'date': 
+			!checkbox.checked ? day.classList.add('hidden') : day.classList.remove('hidden');
+			break;
+		case 'greeting':
+			!checkbox.checked ? greetingContainer.classList.add('hidden') : greetingContainer.classList.remove('hidden');
+			break;
+		case 'quote':
+			!checkbox.checked ? quoteContainer.classList.add('hidden') : quoteContainer.classList.remove('hidden');
+			break;
+		case 'weather':
+			!checkbox.checked ? weather.classList.add('hidden') : weather.classList.remove('hidden');
+			break;
+		case 'player':
+			!checkbox.checked ? player.classList.add('hidden') : player.classList.remove('hidden');
+			break;
+	}
+}
+
+const hideInterface = () =>{
+	displayMode.forEach(checkbox => {
 		checkbox.addEventListener('change', () => {
-			const id = checkbox.id
-			switch (id) {
-				case 'time':
-					!checkbox.checked ? time.classList.add('hidden') : time.classList.remove('hidden');
-					break;
-				case 'date': 
-					!checkbox.checked ? day.classList.add('hidden') : day.classList.remove('hidden');
-					break;
-				case 'greeting':
-					!checkbox.checked ? greetingContainer.classList.add('hidden') : greetingContainer.classList.remove('hidden');
-					break;
-				case 'quote':
-					!checkbox.checked ? quoteContainer.classList.add('hidden') : quoteContainer.classList.remove('hidden');
-					break;
-				case 'weather':
-					!checkbox.checked ? weather.classList.add('hidden') : weather.classList.remove('hidden');
-					break;
-				case 'player':
-					!checkbox.checked ? player.classList.add('hidden') : player.classList.remove('hidden');
-					break;
-			}
+			examCheckboxes(checkbox)
 		})
 	})
 }
-hideEl()
+hideInterface();
 
-languageBtn.forEach(lang => {
-	lang.addEventListener('change', () =>{
-		const id = lang.id;
-		console.log(id)
-		switch (id) {
-			case 'lang-ru':
-				language = languagePreset.ru
-				break;
-			case 'lang-en':
-				language = languagePreset.en
-				break;
-		}
-		showGreeting(language);
-		getWeather(language);
-		getQuote(language);
-		showTime();
+const setLang = (btn) => {
+	const id = btn.id;
+	switch (id) {
+		case 'lang-ru':
+			language = languagePreset.ru;
+			btn.checked = true;
+			break;
+		case 'lang-en':
+			language = languagePreset.en;
+			btn.checked = true;
+			break;
+	}
+	showGreeting(language);
+	getWeather(language);
+	getQuote(language);
+	changeSettingsLang(language)
+	showTime();
+}
 
+const changeLang = () =>{
+	languageBtn.forEach(lang => {
+		lang.addEventListener('change', () =>{
+			setLang(lang)
+		})
 	})
-})
+}
+changeLang();
+
 
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
@@ -380,33 +419,18 @@ const getLocalStorage = () => {
 	if(localStorage.getItem('city')) {
 		cityInput.value = localStorage.getItem('city')
 	}
-	displayMode.forEach (checkbox => {
+	displayMode.forEach(checkbox => {
 		let isChecked = localStorage.getItem(checkbox.id);
 		checkbox.checked = (isChecked === 'true');
+		examCheckboxes(checkbox)
+	})
+	languageBtn.forEach(radio => {
+		let isChecked = localStorage.getItem(radio.id);
+		if (isChecked === 'true'){
 
-		const id = checkbox.id
-		switch (id) {
-			case 'time':
-				!checkbox.checked ? time.classList.add('hidden') : time.classList.remove('hidden');
-				break;
-			case 'date': 
-				!checkbox.checked ? day.classList.add('hidden') : day.classList.remove('hidden');
-				break;
-			case 'greeting':
-				!checkbox.checked ? greetingContainer.classList.add('hidden') : greetingContainer.classList.remove('hidden');
-				break;
-			case 'quote':
-				!checkbox.checked ? quoteContainer.classList.add('hidden') : quoteContainer.classList.remove('hidden');
-				break;
-			case 'weather':
-				!checkbox.checked ? weather.classList.add('hidden') : weather.classList.remove('hidden');
-				break;
-			case 'player':
-				!checkbox.checked ? player.classList.add('hidden') : player.classList.remove('hidden');
-				break;
+			setLang(radio);
 		}
 	})
-	
 	getWeather(language);
 }
 window.addEventListener('load', getLocalStorage)

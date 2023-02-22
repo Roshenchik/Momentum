@@ -20,6 +20,9 @@ body {
   background-blend-mode: multiply;
   transition: background-image 1s ease-in-out;
 }
+.preload {
+  transition: none
+}
 
 .header {
   display: flex;
