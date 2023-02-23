@@ -126,43 +126,57 @@ const slidePrev = document.querySelector('.slide-prev')
 const getRandomNumber = (min, max) =>{
 	const random = Math.round(min + Math.random() * (max - min));
 	const randomWithZeros = String(random).padStart(2, '0');
-	return randomWithZeros;
+	return random;
 }
-let randomNum = getRandomNumber(1, 20)
 
-const setBg = (number, dayTime) =>{
-	let img = new Image()
-	img.src = `https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/${dayTime}/${number}.jpg`
+const setBg = (number, src) =>{
+	let img = new Image();
+	console.log(src[number].url_l)
+	img.src = src[number].url_l;
 	img.onload = () =>{
-		body.style.backgroundImage = `url("https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/${dayTime}/${number}.jpg")`
+		body.style.backgroundImage = `url(${src[number].url_l})`;
 	}
 }
+// setBg(randomNum, getDayOfTime())
+let picSrc = null;
+let randomPic = null;
+let picNum = null;
 
-setBg(randomNum, getDayOfTime())
-
+async function setFlickrImage(dayTime) {
+		let url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=0b816c8eabb8f0d5f998ca8954f20fdf&tags=${dayTime}&media=photos&safe_search=1&content_type=1&orientation=horizontal&min_width=1920&extras=url_l&format=json&nojsoncallback=1`
+		const res = await fetch(url);
+		const data = await res.json();
+		picSrc = data.photos.photo;
+		console.log(picSrc[1])
+		randomPic = getRandomNumber(0, picSrc.length-1)
+		picNum = picSrc.length-1
+		setBg(randomPic, picSrc)
+}
+setFlickrImage(getDayOfTime());
 
 const getSlideNext = () =>{
-	if (randomNum >= 20) {
-		randomNum = '01'
+	if (randomPic >= picNum) {
+		randomPic = 0
 	}
 	else {
-		randomNum++
-		randomNum = String(randomNum).padStart(2, '0')
+		randomPic++
 	}
 
-	setBg(randomNum, getDayOfTime())
+	setBg(randomPic, picSrc)
+	console.log(randomPic)
+	console.log(picNum)
 }
 
 const getSlidePrev = () =>{
-	if (randomNum <= 1) {
-		randomNum = '20'
+	if (randomPic <= 0) {
+		randomPic = picNum
 	}
 	else {
-		randomNum--
-		randomNum = String(randomNum).padStart(2, '0')
+		randomPic--
 	}
 
-	setBg(randomNum, getDayOfTime())
+	setBg(randomPic, picSrc)
+	console.log(randomPic)
 }
 
 slideNext.addEventListener('click', getSlideNext)
@@ -227,10 +241,6 @@ changeQuoteBtn.onclick = () => {
 	changeQuoteBtn.style.transform = `rotate(${deg}deg)`
 	deg += 180
 }
-
-
-
-/*                            Add JSON                           */
 
 
 /*                    MUSIC PLAYER                   */
@@ -396,7 +406,6 @@ const changeLang = () =>{
 	})
 }
 changeLang();
-
 
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
