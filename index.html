@@ -56,8 +56,8 @@
     <button class="setting-btn"></button>
     <div class="settings">
 
-      <p class="settings-title language-setting-title">Выберите язык</p>
-      <div class="language-settings">
+      <p class="settings-title language-setting-title">Язык</p>
+      <div class="settings-block language-settings">
         <div class="setting-pair">
           <input type="radio" name="language" id="lang-ru" checked>
           <label class="display-element" for="lang-ru">RU</label>
@@ -68,8 +68,24 @@
         </div>
       </div>
 
+      <p class="settings-title language-setting-title">Фоновое изображения</p>
+      <div class="settings-block image-source-settings">
+        <div class="setting-pair">
+          <input type="radio" name="source" id="unsplash" checked>
+          <label class="display-element" for="unsplash">Unsplash</label>
+        </div>
+        <div class="setting-pair">
+          <input type="radio" name="source" id="flickr">
+          <label class="display-element" for="flickr">Flickr</label>
+        </div>
+        <div class="setting-pair">
+          <input type="radio" name="source" id="github">
+          <label class="display-element" for="github">GitHub</label>
+        </div>
+      </div>
+
       <p class="settings-title display-setting-title">Отображение</p>
-      <div class="display-settings">
+      <div class="settings-block display-settings">
         <div class="setting-pair">
           <input type="checkbox" name="displayMode" id="time" checked>
           <label class="display-element" for="time">Time</label>

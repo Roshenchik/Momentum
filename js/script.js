@@ -125,34 +125,56 @@ const slidePrev = document.querySelector('.slide-prev')
 
 const getRandomNumber = (min, max) =>{
 	const random = Math.round(min + Math.random() * (max - min));
-	const randomWithZeros = String(random).padStart(2, '0');
 	return random;
 }
 
-const setBg = (number, src) =>{
+const setBg = (number, arr, src) =>{
 	let img = new Image();
-	console.log(src[number].url_l)
-	img.src = src[number].url_l;
+	switch (src) {
+		case 'flickr':
+			img.src = arr[number].url_l;
+			break;
+		case 'unsplash':
+			img.src = arr[number].urls.raw
+			break;
+	}
 	img.onload = () =>{
-		body.style.backgroundImage = `url(${src[number].url_l})`;
+		body.style.backgroundImage = `url(${img.src})`;
 	}
 }
-// setBg(randomNum, getDayOfTime())
-let picSrc = null;
+
+let picArr = [];
 let randomPic = null;
 let picNum = null;
+let imgSource = '';
 
-async function setFlickrImage(dayTime) {
-		let url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=0b816c8eabb8f0d5f998ca8954f20fdf&tags=${dayTime}&media=photos&safe_search=1&content_type=1&orientation=horizontal&min_width=1920&extras=url_l&format=json&nojsoncallback=1`
+async function getFlickrImage(dayTime) {
+	imgSource = 'flickr';
+		let url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=0b816c8eabb8f0d5f998ca8954f20fdf&tags=${dayTime},&media=photos&safe_search=1&content_type=1&orientation=horizontal&min_width=1920&extras=url_l&format=json&nojsoncallback=1`;
 		const res = await fetch(url);
 		const data = await res.json();
-		picSrc = data.photos.photo;
-		console.log(picSrc[1])
-		randomPic = getRandomNumber(0, picSrc.length-1)
-		picNum = picSrc.length-1
-		setBg(randomPic, picSrc)
+		picArr = data.photos.photo;
+		console.log(picArr)
+		randomPic = getRandomNumber(0, picArr.length-1)
+		picNum = picArr.length-1
+		setBg(randomPic, picArr, imgSource);
 }
-setFlickrImage(getDayOfTime());
+// getFlickrImage(getDayOfTime());
+
+async function getUnsplashImage(dayTime) {
+	imgSource = 'unsplash';
+	/*                              Adjust resolution                         */
+	let tag = 'nature'
+	// if(dayTime == 'evening'){tag = 'city'};
+	let url = `https://api.unsplash.com/photos/random?orientation=landscape&w=3840&h=2160&query=${tag},${dayTime}&count=30&client_id=KAAJHCc8NZFmv7DQ6dovX1FPI6Gvo_7RdQPPd5icE3M`
+	const res = await fetch(url);
+	picArr = await res.json();
+	console.log(picArr);
+	randomPic = getRandomNumber(0, picArr.length-1);
+	picNum = picArr.length-1;
+	setBg(randomPic, picArr, imgSource);
+}
+getUnsplashImage(getDayOfTime());
 
 const getSlideNext = () =>{
 	if (randomPic >= picNum) {
@@ -162,9 +184,7 @@ const getSlideNext = () =>{
 		randomPic++
 	}
 
-	setBg(randomPic, picSrc)
-	console.log(randomPic)
-	console.log(picNum)
+	setBg(randomPic, picArr, imgSource)
 }
 
 const getSlidePrev = () =>{
@@ -175,8 +195,7 @@ const getSlidePrev = () =>{
 		randomPic--
 	}
 
-	setBg(randomPic, picSrc)
-	console.log(randomPic)
+	setBg(randomPic, picArr, imgSource)
 }
 
 slideNext.addEventListener('click', getSlideNext)

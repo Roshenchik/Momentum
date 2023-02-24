@@ -218,10 +218,10 @@ body {
 }
 
 .time {
-  height: 100px;
+  height: 120px;
   margin-bottom: 10px;
   font-family: 'Arial-MT';
-  font-size: 90px;
+  font-size: 120px;
   letter-spacing: -4px;  
 
   transition: opacity 1s 0.4s, height 1s;
@@ -301,14 +301,14 @@ body {
 
 .settings {
   margin: 0 0 70px 60px;
-  padding: 10px 20px;
+  padding: 20px 20px;
   position: absolute;
   bottom: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  align-items: flex-start;
   align-items: flex-start;
   overflow: hidden;
   transition: height 0.1s, opacity 0.3s;
@@ -319,11 +319,18 @@ body {
   height: 0;
 }
 .settings.active {
-  height: 380px;
+  height: initial;
   width: 220px;
   opacity: 1;
   visibility: visible;
   z-index: 9999;
+}
+
+.settings-block {
+  margin-bottom: 20px;
+}
+.settings-block:last-child{
+  margin-bottom: 0;
 }
 
 .language-settings {
@@ -331,19 +338,25 @@ body {
   display: flex;
 }
 
+.image-source-settings{
+  width: 100%;
+}
+
 .display-settings {
   width: 100%;
 }
 
 .settings-title {
+  margin-bottom: 5px;
   font-size: 15px;
+  text-align: left;
 }
 
 .setting-pair {
   padding: 8px 0 8px 0;
   width: 100%;
   text-align: left;
-  border-bottom: solid 0.1px rgba(255, 255, 255, 0.3);
+  border-bottom: solid 0.1px rgba(255, 255, 255, 0.1);
 }
 
 .display-element {
