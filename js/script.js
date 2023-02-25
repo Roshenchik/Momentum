@@ -145,6 +145,11 @@ const setBg = (number, arr, src) =>{
 		case 'unsplash':
 			img.src = arr[number].urls.raw
 			break;
+		case 'github':
+			let strNumber = String(number + 1).padStart(2, 0);
+			img.src = `${arr}${strNumber}.jpg`;
+			console.log(img.src)
+			break;
 	}
 	img.onload = () =>{
 		body.style.backgroundImage = `url(${img.src})`;
@@ -157,6 +162,13 @@ let picNum = null;
 let imgSource = '';
 let tagText = 'nature';
 
+async function getGithubImage(dayTime) {
+	imgSource = 'github';
+		picArr = `https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/${dayTime}/`;
+		randomPic = getRandomNumber(0, 19)
+		picNum = 19
+		setBg(randomPic, picArr, imgSource);
+}
 
 async function getFlickrImage(dayTime) {
 	imgSource = 'flickr';
@@ -176,7 +188,6 @@ async function getFlickrImage(dayTime) {
 		picNum = picArr.length-1
 		setBg(randomPic, picArr, imgSource);
 }
-// getFlickrImage(getDayOfTime());
 
 async function getUnsplashImage(dayTime) {
 	imgSource = 'unsplash';
@@ -192,7 +203,6 @@ async function getUnsplashImage(dayTime) {
 	picNum = picArr.length-1;
 	setBg(randomPic, picArr, imgSource);
 }
-// getUnsplashImage(getDayOfTime());
 
 const getSlideNext = () =>{
 	if (randomPic >= picNum) {
@@ -439,7 +449,7 @@ const setImgSrc = (btn) => {
 			btn.checked = true;
 			break;
 		case 'github':
-			body.style.backgroundImage = 'url(https://img1.akspic.ru/crops/9/3/9/8/3/138939/138939-morda-kot-polosatyj_kot-zelenyj-koshki_malogo_i_srednego_razmera-3840x2160.jpg)';
+			getGithubImage(getDayOfTime());
 			btn.checked = true;
 			break;
 	}
@@ -458,8 +468,8 @@ const updateTag = () => {
 							getFlickrImage(getDayOfTime());
 							break
 						case 'github':
-							body.style.backgroundImage = 'url(https://img1.akspic.ru/crops/9/3/9/8/3/138939/138939-morda-kot-polosatyj_kot-zelenyj-koshki_malogo_i_srednego_razmera-3840x2160.jpg)';
-							break;
+							getGithubImage(getDayOfTime());
+							break
 					}
 				}
 			})
