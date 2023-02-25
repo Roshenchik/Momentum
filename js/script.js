@@ -8,10 +8,12 @@ const languagePreset = {
 				date: 'ru-RU',
 				placeholderNick: ' введите ваше имя',
 				placeholderCity: 'введите город',
+				placeholderTags: 'Введите тэг (разд. пробелом)',
 				weather: 'ru',
 				quote: 'ru',
 				settings: {
 					languageTitle: 'Язык',
+					imgSourceTitle: 'Фоновое изображение',
 					displayTitle: 'Отображение',
 					displayElements: ['Время', 'Дата', 'Приветствие', 'Цитата', 'Погода', 'Аудиоплеер',]
 				},
@@ -24,10 +26,12 @@ const languagePreset = {
 				date: 'en-EN',
 				placeholderNick: ' enter your name',
 				placeholderCity: 'enter your city',
+				placeholderTags: 'Enter tag (space separated)',
 				weather: 'en',
 				quote: 'en',
 				settings: {
 					languageTitle: 'Language',
+					imgSourceTitle: 'Background image',
 					displayTitle: 'Display',
 					displayElements: ['Time', 'Date', 'Greeting', 'Quote', 'Weather', 'Audioplayer',],
 				},
@@ -63,11 +67,15 @@ const greetingContainer = document.querySelector('.greeting-container');
 const nickname = document.querySelector('.name');
 const greeting = document.querySelector('.greeting');
 const cityInput = document.querySelector('.city');
+const tagsInput = document.querySelectorAll('.tags');
 
 
 const setOnLoad = (lang) => {
 	nickname.placeholder = ` ${lang.placeholderNick}`;
 	cityInput.placeholder = `${lang.placeholderCity}`;
+	tagsInput.forEach(tag => {
+		tag.placeholder = `${lang.placeholderTags}`
+	})
 	cityInput.value = `${lang.city}`;
 	getWeather(language);
 }
@@ -147,10 +155,19 @@ let picArr = [];
 let randomPic = null;
 let picNum = null;
 let imgSource = '';
+let tagText = 'nature';
+
 
 async function getFlickrImage(dayTime) {
 	imgSource = 'flickr';
-		let url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=0b816c8eabb8f0d5f998ca8954f20fdf&tags=${dayTime},&media=photos&safe_search=1&content_type=1&orientation=horizontal&min_width=1920&extras=url_l&format=json&nojsoncallback=1`;
+	tagsInput.forEach(tag => {
+		if(tag.classList.contains('flickr-tags')){
+			if (tag.value){
+				tagText = tag.value.toLowerCase().split(' ').join(',');
+			}
+		}
+	})
+		let url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=0b816c8eabb8f0d5f998ca8954f20fdf&tags=${dayTime},${tagText}&media=photos&safe_search=1&content_type=1&orientation=horizontal&min_width=1920&extras=url_l&format=json&nojsoncallback=1`;
 		const res = await fetch(url);
 		const data = await res.json();
 		picArr = data.photos.photo;
@@ -163,10 +180,11 @@ async function getFlickrImage(dayTime) {
 
 async function getUnsplashImage(dayTime) {
 	imgSource = 'unsplash';
+	tagsInput.forEach(tag => {
+		if(tag.classList.contains('unsplash-tags')){tagText = tag.value.toLowerCase().split(' ').join(',')}
+	})
 	/*                              Adjust resolution                         */
-	let tag = 'nature'
-	// if(dayTime == 'evening'){tag = 'city'};
-	let url = `https://api.unsplash.com/photos/random?orientation=landscape&w=3840&h=2160&query=${tag},${dayTime}&count=30&client_id=KAAJHCc8NZFmv7DQ6dovX1FPI6Gvo_7RdQPPd5icE3M`
+	let url = `https://api.unsplash.com/photos/random?orientation=landscape&w=3840&h=2160&query=${dayTime},${tagText}&count=30&client_id=KAAJHCc8NZFmv7DQ6dovX1FPI6Gvo_7RdQPPd5icE3M`
 	const res = await fetch(url);
 	picArr = await res.json();
 	console.log(picArr);
@@ -174,7 +192,7 @@ async function getUnsplashImage(dayTime) {
 	picNum = picArr.length-1;
 	setBg(randomPic, picArr, imgSource);
 }
-getUnsplashImage(getDayOfTime());
+// getUnsplashImage(getDayOfTime());
 
 const getSlideNext = () =>{
 	if (randomPic >= picNum) {
@@ -349,10 +367,14 @@ const displaySettings = document.querySelector('.display-settings');
 const displayElement = displaySettings.querySelectorAll('.display-element');
 const languageBtn = document.querySelectorAll('input[name="language"]');
 const languageSettingTitle = document.querySelector('.language-setting-title');
+const imageSettingTitle = document.querySelector('.image-setting-title');
 const displaySettingTitle = document.querySelector('.display-setting-title');
+const imgSrcBtn = document.querySelectorAll('input[name="source"]');
+
 
 const changeSettingsLang = (lang) => {
 	languageSettingTitle.textContent = lang.settings.languageTitle;
+	imageSettingTitle.textContent = lang.settings.imgSourceTitle;
 	displaySettingTitle.textContent = lang.settings.displayTitle;
 	displayElement.forEach((name, index) =>{
 		name.textContent = lang.settings.displayElements[index];
@@ -389,6 +411,8 @@ const examCheckboxes = checkbox => {
 	}
 }
 
+
+
 const hideInterface = () =>{
 	displayMode.forEach(checkbox => {
 		checkbox.addEventListener('change', () => {
@@ -397,6 +421,61 @@ const hideInterface = () =>{
 	})
 }
 hideInterface();
+
+const setImgSrc = (btn) => {
+	tagsInput.forEach((tag) =>{
+		tag.classList.remove('opened')
+	})
+
+	switch (btn.id) {
+		case 'unsplash':
+			btn.parentNode.querySelector('.tags').classList.add('opened');
+			getFlickrImage(getDayOfTime());
+			btn.checked = true;
+			break;
+		case 'flickr':
+			btn.parentNode.querySelector('.tags').classList.add('opened');
+			getFlickrImage(getDayOfTime());
+			btn.checked = true;
+			break;
+		case 'github':
+			body.style.backgroundImage = 'url(https://img1.akspic.ru/crops/9/3/9/8/3/138939/138939-morda-kot-polosatyj_kot-zelenyj-koshki_malogo_i_srednego_razmera-3840x2160.jpg)';
+			btn.checked = true;
+			break;
+	}
+}
+
+const updateTag = () => {
+	tagsInput.forEach(tag => {
+		tag.addEventListener('change', () => {
+			imgSrcBtn.forEach(btn => {
+				if(btn.checked == true){
+					switch (btn.id) {
+						case 'unsplash':
+							getFlickrImage(getDayOfTime());
+							break
+						case 'flickr':
+							getFlickrImage(getDayOfTime());
+							break
+						case 'github':
+							body.style.backgroundImage = 'url(https://img1.akspic.ru/crops/9/3/9/8/3/138939/138939-morda-kot-polosatyj_kot-zelenyj-koshki_malogo_i_srednego_razmera-3840x2160.jpg)';
+							break;
+					}
+				}
+			})
+		})
+	})
+}
+updateTag();
+
+const changeBg = () =>{
+	imgSrcBtn.forEach(src => {
+		src.addEventListener('change', () =>{
+			setImgSrc(src);
+		})
+	})
+}
+changeBg();
 
 const setLang = (btn) => {
 	const id = btn.id;
@@ -410,6 +489,7 @@ const setLang = (btn) => {
 			btn.checked = true;
 			break;
 	}
+	setOnLoad(language);
 	showGreeting(language);
 	getWeather(language);
 	getQuote(language);
@@ -429,11 +509,19 @@ changeLang();
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
 	localStorage.setItem('city', cityInput.value)
+	tagsInput.forEach(tag => {
+		let tagClass = tag.classList[1]
+		localStorage.setItem(tagClass, tag.value);
+	})
 	displayMode.forEach (checkbox => {
 		let isChecked = checkbox.checked;
 		localStorage.setItem(checkbox.id, isChecked);
 	})
 	languageBtn.forEach (radio => {
+		let isTurned = radio.checked;
+		localStorage.setItem(radio.id, isTurned);
+	})
+	imgSrcBtn.forEach (radio => {
 		let isTurned = radio.checked;
 		localStorage.setItem(radio.id, isTurned);
 	})
@@ -447,6 +535,12 @@ const getLocalStorage = () => {
 	if(localStorage.getItem('city')) {
 		cityInput.value = localStorage.getItem('city')
 	}
+	tagsInput.forEach(tag => {
+		let tagClass = tag.classList[1]
+		if(localStorage.getItem(tagClass)){
+			tag.value = localStorage.getItem(tagClass);
+		}
+	})
 	displayMode.forEach(checkbox => {
 		let isChecked = localStorage.getItem(checkbox.id);
 		checkbox.checked = (isChecked === 'true');
@@ -459,9 +553,17 @@ const getLocalStorage = () => {
 			setLang(radio);
 		}
 	})
+	imgSrcBtn.forEach(radio => {
+		let isChecked = localStorage.getItem(radio.id);
+		if (isChecked === 'true'){
+
+			setImgSrc(radio);
+		}
+	})
 	getWeather(language);
 }
 window.addEventListener('load', getLocalStorage)
+
 
 
 
