@@ -76,8 +76,6 @@ const setOnLoad = (lang) => {
 	tagsInput.forEach(tag => {
 		tag.placeholder = `${lang.placeholderTags}`
 	})
-	cityInput.value = `${lang.city}`;
-	getWeather(language);
 }
 window.addEventListener('load', setOnLoad(language));
 
@@ -297,7 +295,48 @@ const play = document.querySelector('.play');
 const playNextBtn = document.querySelector('.play-next');
 const playPrevBtn = document.querySelector('.play-prev');
 const playListContainer = document.querySelector('.play-list');
+const progressBar = document.querySelector('.player-progressbar')
+const timeIndicator = document.querySelector('.time-indicator')
+const musicInfo = document.querySelector('.music-info')
+const volume = document.querySelector('.volume')
+const volumeBtn = document.querySelector('.volume-btn')
 const audio = new Audio();
+
+const setVolumeBtn = () => {
+	if (audio.volume == 0) {
+		volumeBtn.className = 'volume-btn mute'
+	} 
+	else if (audio.volume < 0.2){
+		volumeBtn.className = 'volume-btn low'
+	}
+	else if (audio.volume < 0.6){
+		volumeBtn.className = 'volume-btn medium'
+	}
+	else {
+		volumeBtn.className = 'volume-btn'
+	}
+}
+
+let prevVolume = 1;
+const changeVolume = () => {
+	audio.volume = volume.value;
+	setVolumeBtn();
+}
+
+const muteAudio = () => {
+	if (audio.volume == 0){
+		audio.volume = prevVolume
+		setVolumeBtn();
+	}
+	else {
+		prevVolume = audio.volume;
+		audio.volume = 0;
+		setVolumeBtn();
+	}
+}
+
+volume.addEventListener('input', changeVolume)
+volumeBtn.addEventListener('click', muteAudio)
 
 let isPlay = false
 const playAudio = () =>{
@@ -319,6 +358,54 @@ play.addEventListener('click', () =>{
   (isPlay == false) ? playAudio() : pauseAudio();
 });
 
+const updateProgressBar = () => {
+	progressBar.value = (audio.currentTime/audio.duration)*100
+}
+
+const updateAudioDuration = () =>{
+	let CurrnetTimeMin = String(Math.floor(audio.currentTime/60)).padStart(2, '0');
+	let CurrnetTimeSec = String(Math.floor(audio.currentTime%60)).padStart(2,'0');
+	let durationTimeMin = '00';
+	let durationTimeSec = '00';
+	if (audio.duration){
+		durationTimeMin = String(Math.floor(audio.duration/60)).padStart(2, '0');
+		durationTimeSec = String(Math.floor(audio.duration%60)).padStart(2,'0');
+	}
+	timeIndicator.textContent = `${CurrnetTimeMin}:${CurrnetTimeSec} / ${durationTimeMin}:${durationTimeSec}`;
+}
+
+audio.addEventListener('timeupdate', updateAudioDuration);
+audio.addEventListener('timeupdate', updateProgressBar);
+
+progressBar.addEventListener('mousemove', (e) => {
+	let offset = (e.offsetX/progressBar.offsetWidth);
+
+	progressBar.onclick = () =>{
+		audio.currentTime = offset * audio.duration;
+		pauseTime = offset * audio.duration;
+	}
+
+	if (e.buttons == 1){
+		audio.removeEventListener('timeupdate', updateProgressBar)
+		progressBar.value = offset * 100
+
+		progressBar.onmouseup = () => {
+				audio.currentTime = offset * audio.duration;
+				pauseTime = offset * audio.duration;
+				audio.addEventListener('timeupdate', updateProgressBar)
+		}
+
+		progressBar.onmouseleave = (e) => {
+			if (e.buttons == 1){
+				audio.currentTime = offset * audio.duration;
+				pauseTime = offset * audio.duration;
+				audio.addEventListener('timeupdate', updateProgressBar)
+			}
+		}
+
+	}
+})
+
 let playNum = 0;
 const playNext = () =>{
 	if (playNum >= (playlist.length - 1)) {
@@ -327,9 +414,9 @@ const playNext = () =>{
 	else {
 		playNum++
 	}
+	pauseTime = 0;
 	playAudio();
 	play.classList.add('pause');
-	pauseTime = 0;
 }
 
 const playPrev = () =>{
@@ -339,9 +426,9 @@ const playPrev = () =>{
 	else {
 		playNum--
 	}
+	pauseTime = 0;
 	playAudio();
 	play.classList.add('pause');
-	pauseTime = 0;
 }
 
 audio.addEventListener('ended', playNext);
@@ -359,12 +446,29 @@ const addPlayItems = () => {
 	})
 }
 addPlayItems();
+const playItems = document.querySelectorAll('.play-item');
 
 const showAciveSongTitle = () =>{
-	const playItems = document.querySelectorAll('.play-item');
 	playItems.forEach((item) => item.classList.remove('active'))
 	playItems[playNum].classList.add('active');
+	musicInfo.textContent = playItems[playNum].textContent
+	musicInfo.classList.add('active')
 }
+
+const playChosenSong = (index) => {
+	playNum = index;
+	pauseTime = 0;
+	playAudio();
+	play.classList.add('pause');
+}
+
+	playItems.forEach((item, i) => {
+		item.addEventListener('click', () => {
+			playChosenSong(i)
+		})
+	})
+
+
 
 audio.addEventListener('playing', showAciveSongTitle)
 
@@ -544,6 +648,11 @@ const getLocalStorage = () => {
 	}
 	if(localStorage.getItem('city')) {
 		cityInput.value = localStorage.getItem('city')
+		getWeather(language);
+	}
+	else{
+		cityInput.value = `${language.city}`;
+		getWeather(language);
 	}
 	tagsInput.forEach(tag => {
 		let tagClass = tag.classList[1]
