@@ -11,12 +11,17 @@ const languagePreset = {
 				placeholderTags: 'Введите тэг (разд. пробелом)',
 				weather: 'ru',
 				quote: 'ru',
+				playlist: 'Плейлист',
 				settings: {
 					languageTitle: 'Язык',
 					imgSourceTitle: 'Фоновое изображение',
 					displayTitle: 'Отображение',
 					displayElements: ['Время', 'Дата', 'Приветствие', 'Цитата', 'Погода', 'Аудиоплеер',]
 				},
+				reminder: {
+					what: 'Что напомнить:',
+					when: 'Когда напомнить:',
+				}
 			},
 	en: {morning: 'Good morning',
 				day: 'Good afternoon',
@@ -29,12 +34,17 @@ const languagePreset = {
 				placeholderTags: 'Enter tag (space separated)',
 				weather: 'en',
 				quote: 'en',
+				playlist: 'Playlist',
 				settings: {
 					languageTitle: 'Language',
 					imgSourceTitle: 'Background image',
 					displayTitle: 'Display',
 					displayElements: ['Time', 'Date', 'Greeting', 'Quote', 'Weather', 'Audioplayer',],
 				},
+				reminder: {
+					what: 'What to remind:',
+					when: 'When to remind:',
+				}
 			}, 
 }
 
@@ -68,11 +78,17 @@ const nickname = document.querySelector('.name');
 const greeting = document.querySelector('.greeting');
 const cityInput = document.querySelector('.city');
 const tagsInput = document.querySelectorAll('.tags');
+const playlistTitle = document.querySelector('.playlist-title');
+const reminderTextTitle = document.querySelector('.reminder-text-title');
+const reminderDateTitle = document.querySelector('.reminder-date-title');
 
 
 const setOnLoad = (lang) => {
 	nickname.placeholder = ` ${lang.placeholderNick}`;
 	cityInput.placeholder = `${lang.placeholderCity}`;
+	playlistTitle.textContent = `${lang.playlist}`
+	reminderTextTitle.textContent = `${lang.reminder.what}`
+	reminderDateTitle.textContent = `${lang.reminder.when}`
 	tagsInput.forEach(tag => {
 		tag.placeholder = `${lang.placeholderTags}`
 	})
@@ -117,7 +133,9 @@ const showGreeting = (lang) => {
 			break;
 	}
 
-	setTimeout(showGreeting, 1000)
+	setTimeout(() => {
+		showGreeting(language)
+	}, 1000);
 }
 
 showGreeting(language);
@@ -192,7 +210,6 @@ async function getUnsplashImage(dayTime) {
 	tagsInput.forEach(tag => {
 		if(tag.classList.contains('unsplash-tags')){tagText = tag.value.toLowerCase().split(' ').join(',')}
 	})
-	/*                              Adjust resolution                         */
 	let url = `https://api.unsplash.com/photos/random?orientation=landscape&w=3840&h=2160&query=${dayTime},${tagText}&count=30&client_id=KAAJHCc8NZFmv7DQ6dovX1FPI6Gvo_7RdQPPd5icE3M`
 	const res = await fetch(url);
 	picArr = await res.json();
@@ -270,6 +287,9 @@ function getQuote(lang) {
 			console.log(quotes[randomQuote])
 			quote.textContent = `“${quotes[randomQuote].text}”`;
 			author.textContent = quotes[randomQuote].author;
+			if (!quotes[randomQuote].author) {
+				author.textContent = 'Uknown'
+			}
 			break;
 		case 'ru':
 			console.log(quotes[randomQuote])
@@ -472,6 +492,128 @@ const playChosenSong = (index) => {
 
 audio.addEventListener('playing', showAciveSongTitle)
 
+/*                    REMINDER                   */
+const reminderOpenBtn = document.querySelector('.reminder-open-btn')
+const reminderPanel = document.querySelector('.reminder-panel')
+const reminderText = document.querySelector('input[name="reminder-text"]')
+const reminderDate = document.querySelector('input[name="reminder-date"]')
+const remindBtn = document.querySelector('.remind-btn')
+const warning = document.querySelector('.warning')
+const reminderMessage = document.querySelector('.reminder-message')
+const messageTime = document.querySelector('.message-time')
+const messageText = document.querySelector('.message-text')
+const cancelBtn = document.querySelector('.cancel-btn')
+
+const restrictPrevDates = () =>{
+	const date = new Date()
+	reminderDate.min = date.toISOString().slice(0, 16);
+	setTimeout(restrictPrevDates, 1000);
+}
+restrictPrevDates();
+
+const openReminderPanel = () =>{
+	reminderPanel.classList.toggle('active');
+}
+reminderOpenBtn.addEventListener('click', openReminderPanel)
+
+let crntReminderValue = '';
+let crntReminderText = '';
+const getReminderValues = () => {
+	if (reminderText.value && reminderDate.value){
+		crntReminderValue = reminderDate.value
+		crntReminderText = reminderText.value
+		setReminder();
+	}
+	else {
+		warning.classList.add('active')
+		remindBtn.style.visibility = 'hidden'
+		setTimeout(() => {
+			warning.classList.remove('active')
+			remindBtn.style.visibility = 'visible'
+		}, 1000);
+	}
+}
+remindBtn.addEventListener('click', getReminderValues);
+
+const resetReminder = () => {
+	console.log('Function Stoped');
+	clearTimeout(timeout);
+	messageTime.textContent = '00s'
+	messageText.textContent = '...'
+	reminderMessage.classList.remove('active');
+}
+cancelBtn.addEventListener('click', resetReminder);
+
+const alarm = new Audio();
+alarm.src = '../assets/sounds/alarm/audioblocks-synthwave-rock-fight-fight_rSfr0W1M8_NWM.mp3'
+alarm.loop = true;
+
+
+const completeReminder = () => {
+	resetReminder();
+	alarm.currentTime = 0;
+	alarm.play();
+	alert (crntReminderText);
+	alarm.pause();
+}
+
+let timeLeft = ''
+let secLeft = ''
+const getReminderTimeLeft = () => {
+	const date = new Date()
+	const plannedDate = new Date(crntReminderValue)
+	const plannedMsSec = plannedDate.getTime()
+	const currentMsSec = date.getTime()
+
+	secLeft = Math.floor((plannedMsSec - currentMsSec)/1000);
+
+	const minLeft = Math.floor(secLeft/60)
+	const hourLeft = Math.floor(minLeft/60)
+	const dayLeft = Math.floor(hourLeft/24)
+
+	const hours = hourLeft%24
+	const mins = minLeft%60
+	const sec = secLeft%60
+
+	timeLeft = ''
+	if (dayLeft > 0) {
+		timeLeft += dayLeft + 'd ' 
+	}
+	if (hours > 0) {
+		timeLeft += hours + 'h '
+	}
+	if (mins > 0) {
+		timeLeft += mins + 'm '
+	}
+	timeLeft += sec + 's ' 
+	// `${dayLeft}d ${hours}h ${mins}m ${sec}s`
+}
+
+let timeout;
+const setReminderTime = () => {
+	getReminderTimeLeft();
+	messageTime.textContent = timeLeft
+	console.log('running')
+
+	if(secLeft < 0){
+		completeReminder();
+		return;
+	}
+
+	timeout = setTimeout(setReminderTime, 1000);
+}
+
+const setReminderValues = () => {
+	messageText.textContent = crntReminderText
+	setReminderTime();
+}
+
+const setReminder = () => {
+	reminderMessage.classList.add('active');
+	reminderPanel.classList.remove('active')
+	setReminderValues();
+}
+
 
 /*                    SETTINGS                   */
 const settings = document.querySelector('.settings');
@@ -525,8 +667,6 @@ const examCheckboxes = checkbox => {
 	}
 }
 
-
-
 const hideInterface = () =>{
 	displayMode.forEach(checkbox => {
 		checkbox.addEventListener('change', () => {
@@ -544,7 +684,7 @@ const setImgSrc = (btn) => {
 	switch (btn.id) {
 		case 'unsplash':
 			btn.parentNode.querySelector('.tags').classList.add('opened');
-			getFlickrImage(getDayOfTime());
+			getUnsplashImage(getDayOfTime());
 			btn.checked = true;
 			break;
 		case 'flickr':
@@ -566,7 +706,7 @@ const updateTag = () => {
 				if(btn.checked == true){
 					switch (btn.id) {
 						case 'unsplash':
-							getFlickrImage(getDayOfTime());
+							getUnsplashImage(getDayOfTime());
 							break
 						case 'flickr':
 							getFlickrImage(getDayOfTime());
@@ -623,6 +763,8 @@ changeLang();
 const setLocalStorage = () => {
 	localStorage.setItem('name', nickname.value)
 	localStorage.setItem('city', cityInput.value)
+	localStorage.setItem('crntReminderValue', crntReminderValue)
+	localStorage.setItem('crntReminderText', crntReminderText)
 	tagsInput.forEach(tag => {
 		let tagClass = tag.classList[1]
 		localStorage.setItem(tagClass, tag.value);
@@ -643,6 +785,17 @@ const setLocalStorage = () => {
 window.addEventListener('beforeunload', setLocalStorage)
 
 const getLocalStorage = () => {
+
+	if (localStorage.getItem('crntReminderValue')) {
+		crntReminderValue = localStorage.getItem('crntReminderValue')
+		reminderDate.value = crntReminderValue;
+	}
+	if (localStorage.getItem('crntReminderValue')) {
+		crntReminderText = localStorage.getItem('crntReminderText')
+		reminderText.value = crntReminderText;
+	}
+	getReminderValues();
+
 	if(localStorage.getItem('name')) {
 		nickname.value = localStorage.getItem('name')
 	}
@@ -682,19 +835,4 @@ const getLocalStorage = () => {
 	getWeather(language);
 }
 window.addEventListener('load', getLocalStorage)
-
-
-
-
-
-// const state = {
-//   language: 'en', 
-//   photoSource: 'github',
-//   blocks: ['time', 'date','greeting', 'quote', 'weather', 'audio']
-// }
-
-
-
-
-
 
