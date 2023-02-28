@@ -814,9 +814,15 @@ const getLocalStorage = () => {
 		}
 	})
 	displayMode.forEach(checkbox => {
-		let isChecked = localStorage.getItem(checkbox.id);
-		checkbox.checked = (isChecked === 'true');
-		examCheckboxes(checkbox)
+		if (localStorage.getItem(checkbox.id)) {
+			let isChecked = localStorage.getItem(checkbox.id);
+			checkbox.checked = (isChecked === 'true');
+			examCheckboxes(checkbox)
+		}
+		else {
+			checkbox.checked = true;
+			examCheckboxes(checkbox)
+		}
 	})
 	languageBtn.forEach(radio => {
 		let isChecked = localStorage.getItem(radio.id);
