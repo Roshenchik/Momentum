@@ -782,7 +782,7 @@ const setLocalStorage = () => {
 		localStorage.setItem(radio.id, isTurned);
 	})
 }
-window.addEventListener('beforeunload', setLocalStorage)
+// window.addEventListener('beforeunload', setLocalStorage)
 
 const getLocalStorage = () => {
 
@@ -832,9 +832,14 @@ const getLocalStorage = () => {
 		}
 	})
 	imgSrcBtn.forEach(radio => {
-		let isChecked = localStorage.getItem(radio.id);
-		if (isChecked === 'true'){
-
+		if (localStorage.getItem(radio.id)) {
+			let isChecked = localStorage.getItem(radio.id);
+			if (isChecked === 'true'){
+				setImgSrc(radio);
+			}
+		}
+		else {
+			if (radio.id == 'unsplash')
 			setImgSrc(radio);
 		}
 	})
