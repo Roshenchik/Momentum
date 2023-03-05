@@ -782,7 +782,7 @@ const setLocalStorage = () => {
 		localStorage.setItem(radio.id, isTurned);
 	})
 }
-// window.addEventListener('beforeunload', setLocalStorage)
+window.addEventListener('beforeunload', setLocalStorage)
 
 const getLocalStorage = () => {
 
